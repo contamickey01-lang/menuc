@@ -27,6 +27,10 @@
     <div class="card">
       <h1 class="title">Menu do BASE QUATAM no FiveM</h1>
       <p class="desc">Toque para iniciar/garantir o FiveM e executar o menu no seu PC.</p>
+      <div class="row" style="margin-bottom:8px">
+        <input id="device" class="btn" style="flex:2" placeholder="ID do computador (ex.: gou-pc)" />
+        <button id="save" class="btn" style="flex:1">Salvar ID</button>
+      </div>
       <div class="row">
         <button id="run" class="btn">Iniciar Menu no FiveM</button>
       </div>
@@ -36,7 +40,14 @@
   </div>
   <script>
     const statusEl = document.getElementById('status');
-    const deviceId = 'default';
+    const deviceInput = document.getElementById('device');
+    const saved = localStorage.getItem('deviceId') || 'default';
+    deviceInput.value = saved;
+    document.getElementById('save').addEventListener('click', () => {
+      const v = (deviceInput.value || '').trim() || 'default';
+      localStorage.setItem('deviceId', v);
+      statusEl.textContent = 'ID salvo: ' + v;
+    });
     async function sendCommand() {
       statusEl.textContent = 'Enviando comando...';
       try {
@@ -44,7 +55,7 @@
         const res = await fetch('/api/command', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'RUN_MENU', device: deviceId, nonce })
+          body: JSON.stringify({ action: 'RUN_MENU', device: (localStorage.getItem('deviceId') || 'default'), nonce })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Falha');

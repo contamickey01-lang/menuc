@@ -34,7 +34,8 @@ module.exports = async (req, res) => {
       nonce,
       ts: Date.now()
     });
-    const putRes = await fetch(`${url}/storage/v1/object/loader/command.json`, {
+    const target = `${url}/storage/v1/object/loader/commands/${encodeURIComponent(device || 'default')}.json`;
+    const putRes = await fetch(target, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${key}`,
