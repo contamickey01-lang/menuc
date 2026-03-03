@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BASE QUATAM WEB</title>
+  <meta name="theme-color" content="#0a0a0a">
+  <style>
+    :root { color-scheme: dark light; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#0b0c10; color:#e8eaed; }
+    .wrap { min-height: 100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+    .card { width:100%; max-width:560px; background:#121317; border:1px solid #24262b; border-radius:16px; padding:24px; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+    .title { font-size:20px; margin:0 0 8px; }
+    .desc { font-size:14px; opacity:.8; margin:0 0 16px; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; }
+    .btn { appearance:none; border:1px solid #2e3138; background:#1a1c22; color:#e8eaed; padding:14px 18px; border-radius:12px; font-weight:600; cursor:pointer; flex:1; min-width:200px; transition:transform .06s ease, background .15s ease; }
+    .btn:hover { background:#20222a; }
+    .btn:active { transform:scale(.98); }
+    .status { margin-top:16px; font-size:13px; opacity:.85; }
+    .small { font-size:12px; opacity:.7; margin-top:4px; }
+    .ok { color:#8BC34A; }
+    .err { color:#EF5350; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1 class="title">Menu do BASE QUATAM no FiveM</h1>
+      <p class="desc">Toque para iniciar/garantir o FiveM e executar o menu no seu PC.</p>
+      <div class="row">
+        <button id="run" class="btn">Iniciar Menu no FiveM</button>
+      </div>
+      <div id="status" class="status"></div>
+      <div class="small">Hospedagem recomendada: Vercel. Requer agente rodando no PC.</div>
+    </div>
+  </div>
+  <script>
+    const statusEl = document.getElementById('status');
+    const deviceId = 'default';
+    async function sendCommand() {
+      statusEl.textContent = 'Enviando comando...';
+      try {
+        const nonce = Math.random().toString(36).slice(2);
+        const res = await fetch('/api/command', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'RUN_MENU', device: deviceId, nonce })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Falha');
+        statusEl.innerHTML = '<span class="ok">Comando enviado.</span> Aguarde o agente executar.';
+      } catch (e) {
+        statusEl.innerHTML = '<span class="err">Erro: ' + (e.message || e) + '</span>';
+      }
+    }
+    document.getElementById('run').addEventListener('click', sendCommand);
+  </script>
+</body>
+</html>
