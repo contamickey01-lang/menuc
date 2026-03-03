@@ -17,13 +17,12 @@ module.exports = async (req, res) => {
       return;
     }
     const body = JSON.stringify({
-      bucketName: 'loader',
       prefix: 'commands/',
       limit: 1000,
       offset: 0,
       sortBy: { column: 'name', order: 'asc' }
     });
-    const r = await fetch(`${url}/storage/v1/object/list`, {
+    const r = await fetch(`${url}/storage/v1/object/list/loader`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${key}`,
