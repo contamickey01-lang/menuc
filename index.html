@@ -30,6 +30,7 @@
       <div class="row" style="margin-bottom:8px">
         <input id="device" class="btn" style="flex:2" placeholder="ID do computador (ex.: gou-pc)" />
         <button id="save" class="btn" style="flex:1">Salvar ID</button>
+        <button id="list" class="btn" style="flex:1">Ver PCs</button>
       </div>
       <div class="row">
         <button id="run" class="btn">Iniciar Menu no FiveM</button>
@@ -65,6 +66,26 @@
       }
     }
     document.getElementById('run').addEventListener('click', sendCommand);
+    document.getElementById('list').addEventListener('click', async () => {
+      statusEl.textContent = 'Carregando PCs...';
+      try {
+        const r = await fetch('/api/devices');
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.error || 'Falha');
+        const devices = (j.devices || []);
+        if (!devices.length) { statusEl.textContent = 'Nenhum PC encontrado.'; return; }
+        const pick = prompt('Selecione um ID:\n' + devices.join('\n'));
+        if (pick) {
+          localStorage.setItem('deviceId', pick.trim());
+          deviceInput.value = pick.trim();
+          statusEl.textContent = 'ID salvo: ' + pick.trim();
+        } else {
+          statusEl.textContent = 'Seleção cancelada.';
+        }
+      } catch (e) {
+        statusEl.innerHTML = '<span class="err">Erro: ' + (e.message || e) + '</span>';
+      }
+    });
   </script>
 </body>
 </html>
